@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }}活動 - 管理後台{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{{ action }}活動</h1>
+            <a href="{{ url_for('admin.manage_events') }}" class="btn btn-outline-secondary">返回列表</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                {% set url = url_for('admin.update_event', id=event.id) if event else url_for('admin.create_event') %}
+                <form action="{{ url }}" method="POST">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="title" class="form-label">活動標題 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required value="{{ event.title if event else '' }}">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">活動類別 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">請選擇...</option>
+                                <option value="講座" {% if event and event.category == '講座' %}selected{% endif %}>講座</option>
+                                <option value="工作坊" {% if event and event.category == '工作坊' %}selected{% endif %}>工作坊</option>
+                                <option value="音樂會" {% if event and event.category == '音樂會' %}selected{% endif %}>音樂會</option>
+                                <option value="比賽" {% if event and event.category == '比賽' %}selected{% endif %}>比賽</option>
+                                <option value="社群聚會" {% if event and event.category == '社群聚會' %}selected{% endif %}>社群聚會</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">活動地點 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="location" name="location" required value="{{ event.location if event else '' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="event_date" class="form-label">活動時間 <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="event_date" name="event_date" required value="{{ event.event_date.strftime('%Y-%m-%dT%H:%M') if event else '' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="registration_deadline" class="form-label">報名截止日期 <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="registration_deadline" name="registration_deadline" required value="{{ event.registration_deadline.strftime('%Y-%m-%dT%H:%M') if event else '' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="max_participants" class="form-label">名額上限 <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="max_participants" name="max_participants" min="1" required value="{{ event.max_participants if event else '50' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="image_url" class="form-label">活動封面圖 URL</label>
+                            <input type="url" class="form-control" id="image_url" name="image_url" placeholder="https://..." value="{{ event.image_url if event.image_url else '' }}">
+                        </div>
+
+                        <div class="col-12 mb-4">
+                            <label for="description" class="form-label">活動詳細內容 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ event.description if event else '' }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">儲存活動</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

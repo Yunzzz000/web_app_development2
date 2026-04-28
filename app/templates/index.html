@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}首頁 - 活動報名平台{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-primary text-white rounded-3 shadow">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">尋找下一個精彩活動</h1>
+        <p class="col-md-8 fs-4">從工作坊到音樂會，這裡有所有你感興趣的活動。立即瀏覽並報名參加！</p>
+        <a href="{{ url_for('event.list_events') }}" class="btn btn-light btn-lg">瀏覽所有活動</a>
+    </div>
+</div>
+
+<h2 class="mb-4">🔥 精選活動</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for event in events %}
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+            <img src="{{ event.image_url if event.image_url else 'https://via.placeholder.com/400x200?text=No+Image' }}" class="card-img-top" alt="{{ event.title }}">
+            <div class="card-body">
+                <div class="badge bg-info text-dark mb-2">{{ event.category }}</div>
+                <h5 class="card-title fw-bold">{{ event.title }}</h5>
+                <p class="card-text text-muted text-truncate">{{ event.description }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-secondary">📅 {{ event.event_date.strftime('%Y-%m-%d') }}</small>
+                    <a href="{{ url_for('event.detail', id=event.id) }}" class="btn btn-primary btn-sm">查看詳情</a>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top-0 pb-3">
+                <small class="text-muted">
+                    剩餘名額：{{ event.max_participants - event.registrations|length }} / {{ event.max_participants }}
+                </small>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">目前暫無活動，敬請期待！</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

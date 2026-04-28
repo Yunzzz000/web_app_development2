@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}搜尋結果: {{ query }} - 活動報名平台{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">首頁</a></li>
+            <li class="breadcrumb-item active">搜尋結果</li>
+        </ol>
+    </nav>
+    <h1>搜尋結果：<span class="text-primary">"{{ query }}"</span></h1>
+    <p class="text-muted">共找到 {{ events|length }} 個相符的活動</p>
+</div>
+
+{% if events %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for event in events %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+            <img src="{{ event.image_url if event.image_url else 'https://via.placeholder.com/400x200?text=No+Image' }}" class="card-img-top" alt="{{ event.title }}">
+            <div class="card-body">
+                <span class="badge bg-info text-dark mb-2">{{ event.category }}</span>
+                <h5 class="card-title fw-bold">{{ event.title }}</h5>
+                <p class="card-text text-muted small">{{ event.description[:80] }}...</p>
+                <div class="mt-auto">
+                    <small class="text-secondary d-block mb-2">📅 {{ event.event_date.strftime('%Y-%m-%d') }}</small>
+                    <a href="{{ url_for('event.detail', id=event.id) }}" class="btn btn-primary btn-sm">查看詳情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div class="mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-search text-muted" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+    </div>
+    <h3>抱歉，找不到與 "{{ query }}" 相關的活動</h3>
+    <p class="text-muted">請嘗試更換關鍵字，或是瀏覽所有活動。</p>
+    <a href="{{ url_for('event.list_events') }}" class="btn btn-primary">瀏覽所有活動</a>
+</div>
+{% endif %}
+{% endblock %}

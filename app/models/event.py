@@ -25,29 +25,54 @@ class Event(db.Model):
     @staticmethod
     def create(data):
         """建立新活動"""
-        new_event = Event(**data)
-        db.session.add(new_event)
-        db.session.commit()
-        return new_event
+        try:
+            new_event = Event(**data)
+            db.session.add(new_event)
+            db.session.commit()
+            return new_event
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating event: {e}")
+            return None
 
     @staticmethod
     def get_all():
         """獲取所有活動"""
-        return Event.query.all()
+        try:
+            return Event.query.order_by(Event.event_date.asc()).all()
+        except Exception as e:
+            print(f"Error getting all events: {e}")
+            return []
 
     @staticmethod
     def get_by_id(event_id):
         """依 ID 獲取活動"""
-        return Event.query.get(event_id)
+        try:
+            return Event.query.get(event_id)
+        except Exception as e:
+            print(f"Error getting event by id {event_id}: {e}")
+            return None
 
     def update(self, data):
         """更新活動資訊"""
-        for key, value in data.items():
-            setattr(self, key, value)
-        db.session.commit()
-        return self
+        try:
+            for key, value in data.items():
+                if hasattr(self, key):
+                    setattr(self, key, value)
+            db.session.commit()
+            return self
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating event: {e}")
+            return None
 
     def delete(self):
         """刪除活動"""
-        db.session.delete(self)
-        db.session.commit()
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting event: {e}")
+            return False

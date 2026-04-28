@@ -17,22 +17,41 @@ class Registration(db.Model):
     @staticmethod
     def create(data):
         """建立新報名"""
-        new_reg = Registration(**data)
-        db.session.add(new_reg)
-        db.session.commit()
-        return new_reg
+        try:
+            new_reg = Registration(**data)
+            db.session.add(new_reg)
+            db.session.commit()
+            return new_reg
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating registration: {e}")
+            return None
 
     @staticmethod
     def get_by_event(event_id):
         """獲取特定活動的所有報名"""
-        return Registration.query.filter_by(event_id=event_id).all()
+        try:
+            return Registration.query.filter_by(event_id=event_id).all()
+        except Exception as e:
+            print(f"Error getting registrations for event {event_id}: {e}")
+            return []
 
     @staticmethod
     def get_by_id(reg_id):
         """依 ID 獲取報名資訊"""
-        return Registration.query.get(reg_id)
+        try:
+            return Registration.query.get(reg_id)
+        except Exception as e:
+            print(f"Error getting registration by id {reg_id}: {e}")
+            return None
 
     def delete(self):
         """取消報名"""
-        db.session.delete(self)
-        db.session.commit()
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting registration: {e}")
+            return False

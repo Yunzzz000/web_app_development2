@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }} - 活動詳情{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">首頁</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('event.list_events') }}">所有活動</a></li>
+                <li class="breadcrumb-item active">{{ event.title }}</li>
+            </ol>
+        </nav>
+
+        <img src="{{ event.image_url if event.image_url else 'https://via.placeholder.com/800x400?text=No+Image' }}" class="img-fluid rounded shadow-sm mb-4" alt="{{ event.title }}">
+        
+        <h1 class="fw-bold mb-3">{{ event.title }}</h1>
+        <div class="mb-4">
+            <span class="badge bg-primary fs-6">{{ event.category }}</span>
+        </div>
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title fw-bold">活動說明</h4>
+                <p class="card-text whitespace-pre-wrap">{{ event.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow sticky-top" style="top: 20px;">
+            <div class="card-body">
+                <h5 class="card-title fw-bold mb-4">活動資訊</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <small class="text-muted d-block">活動時間</small>
+                        <strong>📅 {{ event.event_date.strftime('%Y-%m-%d %H:%M') }}</strong>
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">活動地點</small>
+                        <strong>📍 {{ event.location }}</strong>
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">報名截止</small>
+                        <strong>⌛ {{ event.registration_deadline.strftime('%Y-%m-%d') }}</strong>
+                    </li>
+                    <li class="mb-4">
+                        <small class="text-muted d-block">報名狀態</small>
+                        <div class="progress mb-2" style="height: 10px;">
+                            {% set percent = (event.registrations|length / event.max_participants * 100)|int %}
+                            <div class="progress-bar {% if percent > 80 %}bg-danger{% elif percent > 50 %}bg-warning{% else %}bg-success{% endif %}" 
+                                 role="progressbar" style="width: {{ percent }}%"></div>
+                        </div>
+                        <strong>👥 已報名：{{ event.registrations|length }} / {{ event.max_participants }} 人</strong>
+                    </li>
+                </ul>
+
+                <div class="d-grid">
+                    {% if event.registrations|length >= event.max_participants %}
+                        <button class="btn btn-secondary btn-lg" disabled>已額滿</button>
+                    {% elif event.registration_deadline < now %}
+                         <button class="btn btn-secondary btn-lg" disabled>報名已截止</button>
+                    {% else %}
+                        <a href="{{ url_for('registration.registration_form', id=event.id) }}" class="btn btn-primary btn-lg">立即報名</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
